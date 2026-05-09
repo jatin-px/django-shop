@@ -1,0 +1,16 @@
+[project]
+name = "shop"
+version = "0.1.0"
+description = "Django Ecommerce Store"
+requires-python = ">=3.11"
+
+dependencies = [
+    "django",
+    "pillow",
+    "python-decouple",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.uv]

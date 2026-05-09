@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }} — ShopDjango{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'categories:list' %}">Categories</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'categories:subcategory_list' product.category.category.pk %}">{{ product.category.category.name }}</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'products:list' product.category.pk %}">{{ product.category.name }}</a></li>
+        <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div style="background:#fff; border:1px solid #ddd; border-radius:4px; padding:20px; text-align:center;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height:350px; max-width:100%; object-fit:contain;">
+            {% else %}
+                <div style="height:300px; display:flex; align-items:center; justify-content:center; color:#ccc; font-size:4rem"><i class="bi bi-image"></i></div>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-7">
+        <h4 class="fw-bold mb-1">{{ product.name }}</h4>
+        <div class="mb-2" style="font-size:0.85rem; color:#666">
+            In <a href="{% url 'products:list' product.category.pk %}">{{ product.category.name }}</a>
+        </div>
+        <div style="font-size:1.8rem; font-weight:700; color:#B12704; margin:12px 0">₹{{ product.price }}</div>
+        {% if product.is_in_stock %}
+            <p style="color:#007600; font-weight:500"><i class="bi bi-check-circle-fill"></i> In Stock — {{ product.quantity }} available</p>
+        {% else %}
+            <p style="color:#c0392b; font-weight:500"><i class="bi bi-x-circle-fill"></i> Out of Stock</p>
+        {% endif %}
+        {% if product.description %}
+            <p class="text-muted mt-3" style="font-size:0.92rem; line-height:1.7">{{ product.description }}</p>
+        {% endif %}
+        {% if user.is_authenticated and product.is_in_stock %}
+            <a href="{% url 'cart:add' product.pk %}" class="btn btn-accent mt-3 px-4">
+                <i class="bi bi-cart-plus"></i> Add to Cart
+            </a>
+        {% elif not user.is_authenticated %}
+            <a href="{% url 'accounts:login' %}" class="btn btn-outline-secondary mt-3"><i class="bi bi-lock"></i> Login to Buy</a>
+        {% endif %}
+        {% if user.is_admin_user %}
+            <div class="mt-3 p-3" style="background:#fff8e1; border-radius:4px; border:1px solid #ffc107">
+                <strong style="font-size:0.85rem">Admin Controls</strong>
+                <div class="d-flex gap-2 mt-2 flex-wrap">
+                    <a href="{% url 'products:edit' product.pk %}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-pencil"></i> Edit</a>
+                    <a href="{% url 'products:delete' product.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i> Delete</a>
+                </div>
+                <form method="post" action="{% url 'products:update_stock' product.pk %}" class="d-flex gap-2 mt-2 align-items-center">
+                    {% csrf_token %}
+                    <label style="font-size:0.85rem; white-space:nowrap">Update stock:</label>
+                    <input type="number" name="quantity" value="{{ product.quantity }}" class="form-control form-control-sm" min="0" style="width:80px">
+                    <button type="submit" class="btn btn-sm btn-accent">Update</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

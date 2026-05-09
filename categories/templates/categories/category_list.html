@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}Categories — ShopDjango{% endblock %}
+{% block content %}
+
+{% if user.is_admin_user %}
+<div class="admin-bar d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-shield-check"></i> Admin mode — you can manage all categories</span>
+    <a href="{% url 'categories:add' %}" class="btn btn-sm btn-accent"><i class="bi bi-plus"></i> Add Category</a>
+</div>
+{% endif %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h5 class="section-title mb-0">All Categories</h5>
+    <form method="get" class="d-flex gap-2" style="max-width:300px">
+        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Search categories...">
+        <button type="submit" class="btn btn-sm btn-accent"><i class="bi bi-search"></i></button>
+        {% if query %}<a href="{% url 'categories:list' %}" class="btn btn-sm btn-outline-secondary">✕</a>{% endif %}
+    </form>
+</div>
+
+{% if query %}
+    <p class="text-muted mb-3" style="font-size:0.88rem">Showing results for "<strong>{{ query }}</strong>" — {{ categories.count }} found</p>
+{% endif %}
+
+{% if categories %}
+<div class="row g-3">
+    {% for cat in categories %}
+    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <a href="{% url 'categories:subcategory_list' cat.pk %}" class="cat-card">
+            {% if cat.image %}
+                <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+            {% else %}
+                <div class="cat-placeholder"><i class="bi bi-grid-3x3-gap"></i></div>
+            {% endif %}
+            <div class="cat-name">{{ cat.name }}</div>
+        </a>
+        {% if user.is_admin_user %}
+        <div class="d-flex gap-1 mt-1">
+            <a href="{% url 'categories:edit' cat.pk %}" class="btn btn-xs btn-outline-secondary flex-fill" style="font-size:0.75rem; padding:2px 6px"><i class="bi bi-pencil"></i></a>
+            <a href="{% url 'categories:delete' cat.pk %}" class="btn btn-xs btn-outline-danger flex-fill" style="font-size:0.75rem; padding:2px 6px"><i class="bi bi-trash"></i></a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div><i class="bi bi-grid text-muted"></i></div>
+    <p class="mt-2">{% if query %}No categories match "{{ query }}"{% else %}No categories yet.{% endif %}</p>
+    {% if user.is_admin_user %}<a href="{% url 'categories:add' %}" class="btn btn-accent">Add First Category</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

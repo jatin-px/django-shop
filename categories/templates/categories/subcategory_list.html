@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} — ShopDjango{% endblock %}
+{% block content %}
+
+<nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'categories:list' %}">Categories</a></li>
+        <li class="breadcrumb-item active">{{ category.name }}</li>
+    </ol>
+</nav>
+
+{% if user.is_admin_user %}
+<div class="admin-bar d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-shield-check"></i> Admin mode</span>
+    <a href="{% url 'categories:subcategory_add' %}?category={{ category.pk }}" class="btn btn-sm btn-accent"><i class="bi bi-plus"></i> Add Subcategory</a>
+</div>
+{% endif %}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <h5 class="section-title mb-0">{{ category.name }}</h5>
+    <form method="get" class="d-flex gap-2" style="max-width:280px">
+        <input type="text" name="q" value="{{ query }}" class="form-control form-control-sm" placeholder="Search subcategories...">
+        <button type="submit" class="btn btn-sm btn-accent"><i class="bi bi-search"></i></button>
+        {% if query %}<a href="{% url 'categories:subcategory_list' category.pk %}" class="btn btn-sm btn-outline-secondary">✕</a>{% endif %}
+    </form>
+</div>
+
+{% if subcategories %}
+<div class="row g-3">
+    {% for sub in subcategories %}
+    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <a href="{% url 'products:list' sub.pk %}" class="cat-card">
+            {% if sub.image %}
+                <img src="{{ sub.image.url }}" alt="{{ sub.name }}">
+            {% else %}
+                <div class="cat-placeholder"><i class="bi bi-tag"></i></div>
+            {% endif %}
+            <div class="cat-name">{{ sub.name }}</div>
+        </a>
+        {% if user.is_admin_user %}
+        <div class="d-flex gap-1 mt-1">
+            <a href="{% url 'categories:subcategory_edit' sub.pk %}" class="btn btn-xs btn-outline-secondary flex-fill" style="font-size:0.75rem; padding:2px 6px"><i class="bi bi-pencil"></i></a>
+            <a href="{% url 'categories:subcategory_delete' sub.pk %}" class="btn btn-xs btn-outline-danger flex-fill" style="font-size:0.75rem; padding:2px 6px"><i class="bi bi-trash"></i></a>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <div><i class="bi bi-tag text-muted"></i></div>
+    <p class="mt-2">{% if query %}No subcategories match "{{ query }}"{% else %}No subcategories in this category yet.{% endif %}</p>
+    {% if user.is_admin_user %}<a href="{% url 'categories:subcategory_add' %}?category={{ category.pk }}" class="btn btn-accent">Add First Subcategory</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

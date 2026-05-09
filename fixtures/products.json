@@ -1,0 +1,35 @@
+[
+  {
+    "model": "products.product",
+    "pk": 1,
+    "fields": {
+      "category": 1,
+      "name": "iPhone 15",
+      "price": "79999.00",
+      "quantity": 10,
+      "description": "Latest Apple smartphone"
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 2,
+    "fields": {
+      "category": 2,
+      "name": "Dell XPS 15",
+      "price": "125000.00",
+      "quantity": 5,
+      "description": "Premium business laptop"
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": 3,
+    "fields": {
+      "category": 3,
+      "name": "Denim Jacket",
+      "price": "2499.00",
+      "quantity": 25,
+      "description": "Stylish denim jacket"
+    }
+  }
+]
